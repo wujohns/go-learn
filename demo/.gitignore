@@ -1,0 +1,6 @@
+// vscode 文件
+.vscode
+
+// 调试生成相关
+libs/pkg
+debug
