@@ -1,8 +1,4 @@
 # go 相关学习笔记
-先说结论，`go` 就是一坨shit，从18/3/20后的两年内都改变不了这个事实。谷歌的开源项目若没有被开源社区反逼（比如 `io.js` 最终的结局都是垃圾堆）。
-
-对 `go` 的开坑与填坑只是工作的需要，个人对这块毫无兴趣，推荐使用 `rust`。
-
 ## 初始开发环境配置
 win下的安装：
 在 google code 的下载页下载msi安装包：https://golang.org/dl/
@@ -54,3 +50,43 @@ GOPATH：包加载路径，可设置多个用分号分隔，使用import时会�
 
 ## 简易案例
 在 [demo](/demo) 目录中是一个 `go` 工程的简单案例，主要为在工程内的模块化案例。可以配合 [demo说明文档](/demo.md) 进行查看
+
+## GFW 相关
+直接使用 `vpn` 的话由于特征过于明显容易被封杀，比较不容易被封杀的 `shadowsocks` 由于采用的是 `socks5` 协议无法直接供 `go` 使用。
+
+### 代理方案
+这里使用 [cow](https://github.com/cyfdecyf/cow/) 在本地创建 `http` 代理，并将 `shadowsocks` 作为二级代理使用。从而提供可以被 `go` 使用的 `http` 代理。
+
+在 [release 页面](https://github.com/cyfdecyf/cow/releases) 下载自己系统需要用到的版本。
+
+windows 版本下载解压后，通过配置其中的 `rc.txt` 即可完成对 `cow` 的配置，若想通过本地的 `shadowsocks` 客户端进行连接，以下是作为参考的配置，可从通过 `socks5` 连接与直连 `shadowsocks` 任选其一：
+
+```txt
+# socks5
+proxy = socks5://127.0.0.1:1080
+
+# shadowsocks
+proxy = ss://<加密方式>:<密码>@<服务器地址>:<端口>
+```
+
+同时配置 `cow` 开启的 `http` 代理端口，如下采用默认的 `7777` 端口:
+
+```txt
+listen = http://127.0.0.1:7777
+```
+
+配置完成后点击 `cow-hide.exe` 或 `cow-taskbar` 即可启动服务。
+综上所述，配置可以如下：
+
+```txt
+# rc.txt
+proxy = socks5://127.0.0.1:1080
+listen = http://127.0.0.1:7777
+```
+
+其他详细操作可以参考 `cow` 的文档。
+
+### 配置 go get 使用代理
+直接配置环境变量即可：  
+`http_proxy`: http://127.0.0.1:7777
+`https_proxy`: http://127.0.0.1:7777
